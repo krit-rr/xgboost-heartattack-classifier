@@ -1,0 +1,39 @@
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+from xgboost import XGBClassifier
+
+# Load the dataset
+url = "https://raw.githubusercontent.com/rashikrahmanpritom/heart-attack-analysis-prediction-dataset/master/heart.csv"
+df = pd.read_csv(url)
+
+# Display the first few rows of the dataset
+print(df.head())
+
+# Separate features and target variable
+X = df.drop('target', axis=1)  # 'target' is the column representing the target variable
+y = df['target']
+
+# Convert categorical variables to dummy/indicator variables
+X = pd.get_dummies(X, columns=['sex', 'exang', 'cp', 'fbs', 'restecg'], drop_first=True)
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize the XGBoost classifier
+xgb_model = XGBClassifier()
+
+# Train the model on the training set
+xgb_model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = xgb_model.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy:.2f}")
+
+# Display classification report
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
